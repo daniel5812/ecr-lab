@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return jsonify({
-        "message": "Hello from Flask Docker container",
+        "message": "Hello from Flask Docker container v2",
         "app": "ecr-lab",
         "environment": os.environ.get("APP_ENV", "local")
     })

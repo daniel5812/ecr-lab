@@ -11,7 +11,7 @@ def test_index():
     data = response.get_json()
 
     assert data["app"] == "ecr-lab"
-    assert data["message"] == "Hello from Flask Docker container"
+    assert data["message"] == "Hello from Flask Docker container v2"
 
 
 def test_health():
