@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -73,3 +73,30 @@ jobs:
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+          
+  deploy-to-minikube:
+    needs: build-scan-and-push
+    runs-on: self-hosted
+
+    steps:
+      - name: Refresh ECR pull secret
+        run: |
+          ECR_PASSWORD=$(aws ecr get-login-password --region $AWS_REGION)
+
+          kubectl create secret docker-registry ecr-secret \
+            --docker-server=$ECR_REGISTRY \
+            --docker-username=AWS \
+            --docker-password="$ECR_PASSWORD" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy image to Minikube
+        run: |
+          kubectl set image deployment/ecr-lab-app \
+            ecr-lab-app=$ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
+
+          kubectl rollout status deployment/ecr-lab-app
+
+      - name: Show running image
+        run: |
+          kubectl get deployment ecr-lab-app -o jsonpath='{.spec.template.spec.containers[0].image}'
+          echo
