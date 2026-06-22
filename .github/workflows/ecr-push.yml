@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to ECR
+name: Build, Scan and Push Docker Image to ECR
 
 on:
   push:
@@ -11,7 +11,7 @@ env:
   ECR_REGISTRY: 696223520711.dkr.ecr.eu-central-1.amazonaws.com
 
 jobs:
-  build-and-push:
+  build-scan-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,15 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t $ECR_REPOSITORY:latest .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ecr-lab-app:latest
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
 
       - name: Tag Docker image
         run: |
