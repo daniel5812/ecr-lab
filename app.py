@@ -1,28 +1,36 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import json
+from flask import Flask, jsonify
 import os
 
+app = Flask(__name__)
 
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        response = {
-            "message": "Hello from Docker container",
-            "app": "ecr-lab",
-            "environment": os.environ.get("APP_ENV", "local"),
-            "path": self.path
-        }
 
-        body = json.dumps(response).encode("utf-8")
+@app.route("/")
+def index():
+    return jsonify({
+        "message": "Hello from Flask Docker container",
+        "app": "ecr-lab",
+        "environment": os.environ.get("APP_ENV", "local")
+    })
 
-        self.send_response(200)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(body)))
-        self.end_headers()
-        self.wfile.write(body)
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "status": "ok",
+        "app": "ecr-lab",
+        "environment": os.environ.get("APP_ENV", "local")
+    })
+
+
+@app.route("/hello/<name>")
+def hello(name):
+    return jsonify({
+        "message": f"Hello {name}",
+        "app": "ecr-lab",
+        "environment": os.environ.get("APP_ENV", "local")
+    })
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    server = HTTPServer(("0.0.0.0", port), Handler)
-    print(f"Server running on port {port}")
-    server.serve_forever()
+    app.run(host="0.0.0.0", port=port)
