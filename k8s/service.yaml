@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: ecr-lab-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: ecr-lab-app
   ports:
     - port: 80
       targetPort: 8080
-      nodePort: 30081
+      
