@@ -49,6 +49,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: ecr-lab-app-config
+            - secretRef:
+                name: ecr-lab-app-secret
 
           readinessProbe:
             httpGet:
