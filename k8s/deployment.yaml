@@ -14,12 +14,29 @@ spec:
     spec:
       imagePullSecrets:
         - name: ecr-secret
+
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: ecr-lab-app
           image: 696223520711.dkr.ecr.eu-central-1.amazonaws.com/ecr-lab-app:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
           readinessProbe:
             httpGet:
               path: /health
@@ -27,6 +44,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 3
+
           livenessProbe:
             httpGet:
               path: /health
@@ -34,6 +52,7 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
             failureThreshold: 3
+
           env:
             - name: APP_ENV
               value: "kubernetes"
