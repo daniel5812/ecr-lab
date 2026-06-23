@@ -23,18 +23,11 @@ spec:
         seccompProfile:
           type: RuntimeDefault
 
-      resources:
-        requests:
-          cpu: "100m"
-          memory: "128Mi"
-        limits:
-          cpu: "500m"
-          memory: "256Mi"
-
       containers:
         - name: ecr-lab-app
           image: 696223520711.dkr.ecr.eu-central-1.amazonaws.com/ecr-lab-app:latest
           imagePullPolicy: Always
+
           ports:
             - containerPort: 8080
 
@@ -44,6 +37,18 @@ spec:
             capabilities:
               drop:
                 - ALL
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+          envFrom:
+            - configMapRef:
+                name: ecr-lab-app-config
 
           readinessProbe:
             httpGet:
@@ -60,9 +65,3 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
             failureThreshold: 3
-
-          env:
-            - name: APP_ENV
-              value: "kubernetes"
-            - name: PORT
-              value: "8080"

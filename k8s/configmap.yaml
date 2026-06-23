@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecr-lab-app-config
+data:
+  APP_ENV: "kubernetes-configmap"
+  PORT: "8080"
