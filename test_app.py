@@ -38,3 +38,10 @@ def test_hello_name():
 
     assert data["message"] == "Hello Daniel"
     assert data["app"] == "ecr-lab"
+
+def test_secret_status():
+    client = app.test_client()
+    response = client.get("/secret-status")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "secret_loaded" in data

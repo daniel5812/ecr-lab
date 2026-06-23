@@ -30,6 +30,13 @@ def hello(name):
         "environment": os.environ.get("APP_ENV", "local")
     })
 
+@app.route("/secret-status")
+def secret_status():
+    secret = os.environ.get("APP_SECRET")
+    return jsonify({
+        "secret_loaded": secret is not None and len(secret) > 0
+    })
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
