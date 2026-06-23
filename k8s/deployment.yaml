@@ -23,6 +23,14 @@ spec:
         seccompProfile:
           type: RuntimeDefault
 
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "128Mi"
+        limits:
+          cpu: "500m"
+          memory: "256Mi"
+
       containers:
         - name: ecr-lab-app
           image: 696223520711.dkr.ecr.eu-central-1.amazonaws.com/ecr-lab-app:latest
